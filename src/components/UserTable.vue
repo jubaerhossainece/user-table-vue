@@ -3,7 +3,7 @@
 
         <div class="row">
             <input class="form-control" v-model="searchQuery" @input="filterData" placeholder="Search here">
-            <table>
+            <table class="table table-hover">
                 <thead>
                     <tr>
                         <th v-for="key in tableHeaders" :key="key" @click="sortData(key)">
@@ -35,7 +35,7 @@ export default {
             itemsPerPage: 10,
             searchQuery: '',
             sortKey: '',
-            sortOrder: 'asc'    
+            sortOrder: 'asc',
             }
     },
     computed: {
@@ -53,7 +53,7 @@ export default {
     },
     methods: {
         fetchData() {
-            fetch('https://randomuser.me/api/?results=5')
+            fetch('https://randomuser.me/api/?results=5000')
                 .then(response => response.json())
                 .then(data => {
                     this.users = data.results;
@@ -75,6 +75,8 @@ export default {
         },
         paginate(direction) {
             this.currentPage += direction;
+            console.log("currentPage:"+this.currentPage);
+            console.log("data:" + this.flattenedData);
         },
         sortData(key) {
             if (this.sortKey === key) {
