@@ -43,17 +43,18 @@ export default {
             return this.flattenedData.length > 0 ? Object.keys(this.flattenedData[0]) : [];
         },
         totalPages() {
-            return Math.ceil(this.flattenedData.length / this.itemPerPage);
+            return Math.ceil(this.flattenedData.length / this.itemsPerPage);
         },
         paginatedData() {
             const startIndex = this.currentPage * this.itemsPerPage;
             const endIndex = startIndex + this.itemsPerPage;
+
             return this.flattenedData.slice(startIndex, endIndex)
         }
     },
     methods: {
         fetchData() {
-            fetch('https://randomuser.me/api/?results=5000')
+            fetch('https://randomuser.me/api/?results=50')
                 .then(response => response.json())
                 .then(data => {
                     this.users = data.results;
@@ -63,9 +64,18 @@ export default {
         flattenedUserData(user) {
             const flattenedUser = {};
             for (const key in user) {
+                
                 if (typeof user[key] == 'object') {
+
                     for (const innerkey in user[key]) {
-                        flattenedUser[innerkey] = user[key][innerkey]
+
+                        if(typeof user[key][innerkey] == 'object'){
+                            for(const nestedInnerKey in user[key][innerkey]){
+                                flattenedUser[nestedInnerKey] = user[key][innerkey][nestedInnerKey];
+                            }
+                        }else{
+                            flattenedUser[innerkey] = user[key][innerkey];
+                        }
                     }
                 } else {
                     flattenedUser[key] = user[key];
@@ -76,7 +86,6 @@ export default {
         paginate(direction) {
             this.currentPage += direction;
             console.log("currentPage:"+this.currentPage);
-            console.log("data:" + this.flattenedData);
         },
         sortData(key) {
             if (this.sortKey === key) {
@@ -85,13 +94,21 @@ export default {
                 this.sortKey = key;
                 this.srtOrder = 'asc';
             }
-            this.paginatedData.sort((a, b) => {
+            let data = this.flattenedData;
+            
+            this.flattenedData = data.sort((a, b) => {
                 const aValue = a[key];
                 const bValue = b[key];
 
                 if (this.sortOrder == 'asc') {
-                    return this.aValue.localeCompare(bValue);
+                    if(!isNaN(aValue) && !isNaN(bValue)){
+                        return aValue - bValue;
+                    }
+                    return aValue.localeCompare(bValue);
                 } else {
+                    if(!isNaN(aValue) && !isNaN(bValue)){
+                        return bValue - aValue;
+                    }
                     return bValue.localeCompare(aValue);
                 }
             });
@@ -107,9 +124,9 @@ export default {
                     }
                     return false;
                 });
-                this.paginatedData = filteredData.slice(0, this.itemsPerPage);
+                this.flattenedData = filteredData.slice(0, this.itemsPerPage);
             } else {
-                this.paginatedData = this.flattenedData.slice(0, this.itemsPerPage);
+                this.fetchData();
             }
         }
     },
