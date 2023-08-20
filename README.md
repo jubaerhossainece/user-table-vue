@@ -1,24 +1,15 @@
-# user-table-app
+<h4>1. Installation</h4>
+Clone the repository:</br>
+https://github.com/jubaerhossainece/user-table-vue.git
 
-## Project setup
-```
+<h4>2.Navigate to the project directory:</h4>
+cd user-table-vue
+
+<h4>3. To get started with this project, you will need to have Node.js and NPM installed. 
+Once you have Node.js and NPM installed, you can install the dependencies for the project by running the following command:</h4>
 npm install
-```
 
-### Compiles and hot-reloads for development
-```
+<h4>2. Once the dependencies have been installed, you can start the development server by running the following command:</h4>
 npm run serve
-```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+<h4>3. The development server will start on port 8080. You can open your browser to http://localhost:8080 to view the project.</h4>
