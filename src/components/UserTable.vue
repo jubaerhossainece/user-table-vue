@@ -2,7 +2,7 @@
     <div class="container">
 
         <div class="row">
-            <input class="form-control" v-model="searchQuery" @input="filterData" placeholder="Search here">
+            <input class="form-control mb-2" v-model="searchQuery" @input="filterData" placeholder="Search here">
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -12,14 +12,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(user, index) in paginatedData" :key="index">
+                    <tr v-for="(user, index) in pageData" :key="index">
                         <td v-for="key in tableHeaders" :key="key">{{ user[key] }}</td>
                     </tr>
                 </tbody>
             </table>
             <div>
-                <button @click="paginate(-1)" :disabled="currentPage === 0">Previous</button>
-                <button @click="paginate(1)" :disabled="currentPage === totalPages - 1">Next</button>
+                <button class="btn btn-primary" @click="paginate(-1)" :disabled="currentPage === 0">Previous</button>
+                <button class="btn btn-primary" @click="paginate(1)" :disabled="currentPage === totalPages - 1">Next</button>
             </div>
         </div>
     </div>
@@ -29,8 +29,8 @@
 export default {
     data() {
         return {
-            users: [],
             flattenedData: [],
+            paginatedData: [],
             currentPage: 0,
             itemsPerPage: 10,
             searchQuery: '',
@@ -40,16 +40,16 @@ export default {
     },
     computed: {
         tableHeaders() {
-            return this.flattenedData.length > 0 ? Object.keys(this.flattenedData[0]) : [];
+            return this.paginatedData.length > 0 ? Object.keys(this.paginatedData[0]) : [];
         },
         totalPages() {
-            return Math.ceil(this.flattenedData.length / this.itemsPerPage);
+            return Math.ceil(this.paginatedData.length / this.itemsPerPage);
         },
-        paginatedData() {
+        pageData() {
             const startIndex = this.currentPage * this.itemsPerPage;
             const endIndex = startIndex + this.itemsPerPage;
 
-            return this.flattenedData.slice(startIndex, endIndex)
+            return this.paginatedData.slice(startIndex, endIndex)
         }
     },
     methods: {
@@ -57,8 +57,8 @@ export default {
             fetch('https://randomuser.me/api/?results=50')
                 .then(response => response.json())
                 .then(data => {
-                    this.users = data.results;
-                    this.flattenedData = this.users.map(user => this.flattenedUserData(user));
+                    this.flattenedData = data.results.map(user => this.flattenedUserData(user));
+                    this.paginatedData = this.flattenedData;
                 });
         },
         flattenedUserData(user) {
@@ -85,7 +85,6 @@ export default {
         },
         paginate(direction) {
             this.currentPage += direction;
-            console.log("currentPage:"+this.currentPage);
         },
         sortData(key) {
             if (this.sortKey === key) {
@@ -94,9 +93,9 @@ export default {
                 this.sortKey = key;
                 this.srtOrder = 'asc';
             }
-            let data = this.flattenedData;
+            let data = this.paginatedData;
             
-            this.flattenedData = data.sort((a, b) => {
+            this.paginatedData = data.sort((a, b) => {
                 const aValue = a[key];
                 const bValue = b[key];
 
@@ -116,17 +115,25 @@ export default {
         filterData() {
             if (this.searchQuery) {
                 this.currentPage = 0;
+
                 const filteredData = this.flattenedData.filter(user => {
+                    
                     for (const key in user) {
-                        if (user[key].toString().includes(this.searchQuery)) {
+                        if (user[key].toString().toLowerCase().includes(this.searchQuery.toLowerCase())) {
                             return true;
                         }
                     }
                     return false;
                 });
-                this.flattenedData = filteredData.slice(0, this.itemsPerPage);
+
+                // console log
+                console.log(filteredData);
+                this.paginatedData = filteredData;
+                this.pageData = filteredData.slice(0, this.itemsPerPage);
             } else {
-                this.fetchData();
+                // console log
+                console.log('hello');
+                this.paginatedData = this.flattenedData;
             }
         }
     },
