@@ -54,7 +54,7 @@ export default {
     },
     methods: {
         fetchData() {
-            fetch('https://randomuser.me/api/?results=50')
+            fetch('https://randomuser.me/api/?results=5000')
                 .then(response => response.json())
                 .then(data => {
                     this.flattenedData = data.results.map(user => this.flattenedUserData(user));
@@ -142,3 +142,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+button.btn.btn-primary {
+    margin: 0px 2px;
+}
+</style>
